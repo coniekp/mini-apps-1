@@ -48,11 +48,11 @@ var controller = {
         on: 'submit',
         handler: (e) => {
           e.preventDefault();
-          model.states.filterOn = true;
-          model.states.filters.push($('#filterVal').val());
-          var text = model.states.filters.join(' ');
-          $('.filters-entered').text(text);
+          var val = $('#filterVal').val();
           $('#filterVal').val('');
+          model.states.filterOn = true;
+          model.states.filters.push(val);
+          view.renderFilteredWord(val);
           view.renderCSVReport (); 
         }
       },
@@ -63,7 +63,7 @@ var controller = {
           model.states.filterOn = false;
           model.states.filters = [];
           $('#filterVal').val('');
-          $('.filters-entered').text('');
+          $('#filters-entered').empty();
           view.renderCSVReport();
         }
       }
@@ -75,14 +75,13 @@ var controller = {
 var view = {
   renderRow: (row) => {
     var text = row.join(',');
-    var $record = $('<div>').text(text);
-    $('.results').append($record);
+    var $record = $('<div class="row">').text(text);
+    $('#results').append($record);
   },
   
   renderCSVReport: (rows) => {
     var data;
-    $('.results').empty();
-    debugger;
+    $('#results').empty();
     if (model.states.filterOn) {
       filteredData =  utils.filterCollectionByKeywords(model.states.csvRecords.slice(1), model.states.filters);
       data = [model.states.csvRecords[0]].concat(filteredData);
@@ -91,6 +90,11 @@ var view = {
     }
     
     data.forEach(row => view.renderRow (row));
+  },
+  
+  renderFilteredWord: (word) => {
+    var $word = $('<div>').text(word);
+    $('#filters-entered').append($word);
   }
 };
 
@@ -105,9 +109,8 @@ var utils = {
     });
   },
   
-  filterCollectionByKeywords: (arrays, keywords) => {
+  filterCollectionByKeywords: (arrays, keywords) => { //returns only items that do not contain any element from keywords array
     return arrays.filter(arr => {
-      debugger;
       return keywords.every(keyword => {
         return !utils.findMatchInArray(keyword, arr);
       });

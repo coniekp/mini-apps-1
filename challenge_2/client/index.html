@@ -3,19 +3,36 @@
 <head>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="app.js"></script>
+  <link rel="stylesheet" href="./styles.css"/>
+  <title>JSON-CSV CONVERTER</title>
 </head>
-<body>   
-  <form id="json-input">ENTER JSON:
-    <textarea id="inputVal"></textarea>
-    <input type="submit" value="Submit">
-  </form>
-  <form id="filter-input">ENTER FILTERS:
-    <input id="filterVal" type="text">
-    <input type="submit" value="Submit">
-    <input type="reset" value="Reset">
-  </form>
-  <div class="filters-entered"></div>
-  <div class='results'></div>
+<body> 
+  <h1>CSV FORMATTER</h1>
+  <div id="top-box"> 
+    <div id="json-container">
+      <h5>Enter data in JSON: </h5>   
+      <form id="json-input">
+        <input type="submit" value="Submit">
+        <textarea id="inputVal"></textarea>
+      </form>
+    </div>
+  </div>
+  <div id="bottom-box">
+    <div id="filter-container">
+      <h5>Filter out records with: </h5>
+      <form id="filter-input">
+        <input id="filterVal" type="text">
+        <div id="filter-buttons">
+          <input type="submit" value="Submit">
+          <input type="reset" value="Reset">
+        </div>
+      </form>
+      <div id="filters-entered"></div>
+    </div>
+    <div id="csv-container">
+      <div id="results"></div>
+    </div>
+  </div>
 </body>
 </html>
 
