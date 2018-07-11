@@ -9,6 +9,7 @@ convertToCSV = (req, res, next) => {
   var output = flattenDataStructure(fields, input);
   
   res.send(output);
+  next();
 }
 
 getFieldsInData = (data) => {
@@ -29,7 +30,6 @@ flattenOneRecord = (fields, data) => {
 
 flattenDataStructure = (fields, data) => {
   var results = [fields];
-  
   var recurse = (obj) => {
     results.push(flattenOneRecord(fields, obj));
     if(obj.children) {
@@ -49,9 +49,9 @@ server.use(convertToCSV);
 
 
 server.post('/hi', (req, res) => {
-  console.log("after send", JSON.parse(req.body.data));
+  console.log("Response sent");
 });
 
 server.listen(3000, ()=>{
-  console.log('LESTENENG')});
+  console.log('Listening at localhost:3000')});
 

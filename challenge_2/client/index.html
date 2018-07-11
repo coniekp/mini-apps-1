@@ -4,11 +4,17 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="app.js"></script>
 </head>
-<body>    
-  <form>
-    <textarea id="input"></textarea>
+<body>   
+  <form id="json-input">ENTER JSON:
+    <textarea id="inputVal"></textarea>
     <input type="submit" value="Submit">
   </form>
+  <form id="filter-input">ENTER FILTERS:
+    <input id="filterVal" type="text">
+    <input type="submit" value="Submit">
+    <input type="reset" value="Reset">
+  </form>
+  <div class="filters-entered"></div>
   <div class='results'></div>
 </body>
 </html>

@@ -1,23 +1,117 @@
 $(document).ready(()=>{
-  
-  var $submit = $('form').on( 'submit', (e)=> {
-    e.preventDefault();
-    var val = $('textarea').val(); 
-    post(val, renderRows);
-  });
+  controller.init();
+});
 
-  post = (input, cb) => {
+var model = {
+  states: {
+    csvRecords: [],
+    filterOn: false,
+    filters: []
+  },
+  
+  post: (input) => {
     jQuery.post('http://127.0.0.1:3000/hi', {data: input}, (data) => {
-      cb(data);
+      model.states.csvRecords = data;
+      view.renderCSVReport();
     });
   }
-  
-  renderRows = (rows) => {
-    rows.forEach(row => {
-      var text = row.join(',');
-      var $record = $('<div>').text(text);
-      $('.results').append($record);
+};
+
+
+var controller = {
+  setListener: (el, events) => {
+    events.forEach( event => {
+      $('' + el).on(event.on, event.handler);
     });
-  };
+  },
   
-});
+  init: () => {
+    for (var el in controller.elements) {
+      controller.setListener(el, controller.elements[el]);
+    }
+  },
+  
+  elements: {
+    '#json-input': [
+      {
+        on: 'submit', 
+        handler: (e) => {
+          e.preventDefault();
+          var val = $('#inputVal').val(); 
+          model.post(val);
+        }
+      }
+    ],
+    
+    '#filter-input': [
+      {
+        on: 'submit',
+        handler: (e) => {
+          e.preventDefault();
+          model.states.filterOn = true;
+          model.states.filters.push($('#filterVal').val());
+          var text = model.states.filters.join(' ');
+          $('.filters-entered').text(text);
+          $('#filterVal').val('');
+          view.renderCSVReport (); 
+        }
+      },
+      {
+        on: 'reset',
+        handler: (e) => {
+          e.preventDefault();
+          model.states.filterOn = false;
+          model.states.filters = [];
+          $('#filterVal').val('');
+          $('.filters-entered').text('');
+          view.renderCSVReport();
+        }
+      }
+    ]
+  }
+};
+
+
+var view = {
+  renderRow: (row) => {
+    var text = row.join(',');
+    var $record = $('<div>').text(text);
+    $('.results').append($record);
+  },
+  
+  renderCSVReport: (rows) => {
+    var data;
+    $('.results').empty();
+    debugger;
+    if (model.states.filterOn) {
+      filteredData =  utils.filterCollectionByKeywords(model.states.csvRecords.slice(1), model.states.filters);
+      data = [model.states.csvRecords[0]].concat(filteredData);
+    } else{
+      data = model.states.csvRecords;
+    }
+    
+    data.forEach(row => view.renderRow (row));
+  }
+};
+
+var utils = {
+  findMatchInArray: (str, arr) => { //returns true if array contains target string
+    return arr.some(item => {
+      if (typeof item === 'number'){
+        return item == str;
+      } else {
+        return !!item.match(new RegExp(str, 'i'))
+      }
+    });
+  },
+  
+  filterCollectionByKeywords: (arrays, keywords) => {
+    return arrays.filter(arr => {
+      debugger;
+      return keywords.every(keyword => {
+        return !utils.findMatchInArray(keyword, arr);
+      });
+    });
+  }
+};
+
