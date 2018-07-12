@@ -4,9 +4,9 @@ class App extends React.Component {
   constructor (props) {
     super (props);
     this.state = {
-      userInfo:null,
-      shippingInfo:null,
-      paymentInfo:null,
+      user:null,
+      shipping:null,
+      payment:null,
       currentPlace: 0
     }
     
@@ -15,37 +15,43 @@ class App extends React.Component {
   }
 
   handleClick (input) {
-    console.log(input);
-    console.log(this.state.currentPlace);
-    if (this.state.currentPlace === 4) this.postOrder ();
-    if (this.state.currentPlace >= 1 && this.state.currentPlace <= 3) this.saveInput ();
+    if (this.state.currentPlace === 4) this.postOrder (this.state);
+    if (this.state.currentPlace >= 1 && this.state.currentPlace <= 3) this.saveInput (input);
     this.setState({
       currentPlace: (this.state.currentPlace + 1) % 5
     })
   }
   
   saveInput (input) {
-    console.log('save input')
-    if (this.currentPlace === 1) {
+    if (this.state.currentPlace === 1) {
       this.setState({
-        userInfo: input
+        user: input
       });
     }
-    if (this.currentPlace === 2) {
+    if (this.state.currentPlace === 2) {
       this.setState({
-        shippingInfo: input
+        shipping: input
       });
     }
-    if (this.currentPlace === 3) {
+    if (this.state.currentPlace === 3) {
       this.setState({
-        shippingInfo: input
+        payment: input
       })
     }
   }
   
-  postOrder() {
-  //make post request
-  console.log('Post order');
+  postOrder(input) {
+    var options = {
+      method: "POST",
+      body: JSON.stringify(input)
+    }
+    
+    fetch('http://127.0.0.1:3000', options)
+    .then(response => console.log (response))
+    .catch(err => console.log ("Post failed"));
+    
+    console.log("posted with ", options);
+
   }
   
   renderCurrentPlace (currentPlace) {
@@ -53,10 +59,8 @@ class App extends React.Component {
     if (currentPlace === 1) return <F1 handleClick={this.handleClick}/>
     if (currentPlace === 2) return <F2 handleClick={this.handleClick}/>
     if (currentPlace === 3) return <F3 handleClick={this.handleClick}/>
-    if (currentPlace === 4) return <Summary handleClick={this.handleClick}/>
+    if (currentPlace === 4) return <Summary handleClick={this.handleClick} orderInfo={this.state}/>
   }
-  
-  
   
   render () {
     
@@ -69,8 +73,6 @@ class App extends React.Component {
   }
 }
 
-
-()=>{fund(3)}
 
 class F1 extends React.Component {
   
@@ -204,18 +206,28 @@ class F3 extends React.Component {
 }
 
 var Summary = (props) => {
-  
-  
-  
+  var user = props.orderInfo.user;
+  var shipping = props.orderInfo.shipping;
+  var payment = props.orderInfo.payment;
+    
   return (
     <div className="summary">
       <h1>Order Summary</h1>
-      <div className="f1-review">F1-REVIEW
-      </div>
-      <div className="f2-review">F2-REVIEW
-      </div>
-      <div className="f3-review">F3-REVIEW
-      </div>
+      <div className="user-info-review">
+        <h3>User Information:</h3>
+        <p>{user.first} {user.last}</p> 
+        <p>Email: {user.email}</p>
+      </div><br></br>
+      <div className="shipping-info-review">
+        <h3>Ship to:</h3>
+        <p>{shipping.addressLine1}</p> 
+        <p>{shipping.addressLine2}</p> 
+        <p>{shipping.city} {shipping.state} {shipping.zipcode}</p>
+      </div><br></br>
+      <div className="payment-info-review">
+        <h3>Payment Details:</h3>
+        <p>Card ending in **** {payment.cardNum.slice(12)}</p>
+      </div><br></br>
       <button onClick={props.handleClick}>ORDER</button>
     </div>
   )

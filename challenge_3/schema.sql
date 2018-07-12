@@ -22,7 +22,7 @@ CREATE TABLE shipping_address (
   state VARCHAR(2),
   zipcode VARCHAR(5),
   PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE credit_card (
   id INT NOT NULL AUTO_INCREMENT,
@@ -31,9 +31,9 @@ CREATE TABLE credit_card (
   cvv VARCHAR(3),
   zipcode VARCHAR(3),
   PRIMARY KEY (id)  
-)
+);
 
-CREATE TABLE order (
+CREATE TABLE orders (
   id INT NOT NULL AUTO_INCREMENT,
   user_id INT,
   shipping_id INT,
@@ -42,7 +42,7 @@ CREATE TABLE order (
   FOREIGN KEY (user_id) REFERENCES user (id),
   FOREIGN KEY (shipping_id) REFERENCES shipping_address (id),
   FOREIGN KEY (credit_card_id) REFERENCES credit_card (id)
-)
+);
 
 CREATE TABLE inventory (
   id INT NOT NULL AUTO_INCREMENT,
@@ -50,7 +50,7 @@ CREATE TABLE inventory (
   price INT,
   quantity INT,
   PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE inventory_order (
   id INT NOT NULL AUTO_INCREMENT, 
@@ -59,5 +59,5 @@ CREATE TABLE inventory_order (
   quantity INT,
   PRIMARY KEY (id),
   FOREIGN KEY (item_id) REFERENCES inventory (id),
-  FOREIGN KEY (order_id) REFERENCES order (id)
-)
+  FOREIGN KEY (order_id) REFERENCES orders (id)
+);
