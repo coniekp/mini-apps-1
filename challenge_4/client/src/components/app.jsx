@@ -9,8 +9,13 @@ class App extends React.Component {
       board: utils.generateBoard(),
       turn: 'red',
       count: 0,
-      gameOver: ''
+      gameOver: '',
+      scores: {
+        red: 0,
+        yellow: 0
+      }
     }
+    this.getScores();
   }
   
   handleClick(x, y) {
@@ -69,15 +74,70 @@ class App extends React.Component {
   }
   
   postWin () {
-    var url = 'http://127.0.0.1:3000/' + this.state.turn;
-    fetch(url).then(() => console.log('sent'));
+    var url = 'http://127.0.0.1:3000/post/' + this.state.turn;
+    fetch(url)
+    .then((res) => {
+      console.log('Win posted');
+      return res.json();
+    })
+    .then((scores) => {
+      this.setState({
+        scores: scores
+      })
+    });
+  }
+  
+  restart () {
+    this.setState({
+      board: utils.generateBoard(),
+      turn: 'red',
+      count: 0,
+      gameOver: ''
+    })
+  }
+  
+  getScores () {
+    var url = 'http://127.0.0.1:3000/get';
+    fetch(url)
+    .then((res) => {
+      console.log('Retrieved scores');
+      return res.json();
+    })
+    .then ((scores) => {
+      this.setState({
+        scores: scores
+      });
+    });
+  }
+  
+  resetScores () {
+    var url = 'http://127.0.0.1:3000/reset';
+    fetch(url)
+    .then((res) => {
+      return res.json();
+    })
+    .then((scores) => {
+      console.log("Scores reset");
+      this.setState({
+        scores: scores
+      })
+    });
   }
   
   render () {
     return (
       <div>
         <h1>Connect Fo-o-o-or</h1>
+        <h3>Scores</h3>
+        <button onClick={this.resetScores.bind(this)}>reset</button>
+        <div>Red: 
+          <span>{this.state.scores.red}</span>
+        </div>
+        <div>Yellow: 
+          <span>{this.state.scores.yellow}</span>
+        </div>
         <Board board={this.state.board} handleClick={this.handleClick.bind(this)}/>
+        <button onClick={this.restart.bind(this)}>new game</button>
         <div>{this.state.gameOver}
         </div>
       </div>
