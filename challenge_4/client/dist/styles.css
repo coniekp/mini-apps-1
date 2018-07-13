@@ -1,13 +1,22 @@
 .board {
   display:flex;
   flex-direction:row;
+  border: 1px solid black;
 }
 .column {
  display:flex;
  flex-direction: column-reverse; 
 }
 .square {
+  margin: 5px;
   border: 1px solid black;
+  border-radius : 50px;
   min-height: 50px;
   min-width: 50px;
+}
+.red {
+  background: #f45642;
+}
+.yellow {
+  background: #ffd800;
 }
