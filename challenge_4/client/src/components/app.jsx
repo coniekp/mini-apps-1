@@ -1,5 +1,6 @@
 import React from 'react';
 import Board from './board.jsx';
+import Scoreboard from './scoreboard.jsx';
 import utils from '../utils/utils.js';
 
 class App extends React.Component {
@@ -9,6 +10,7 @@ class App extends React.Component {
       board: utils.generateBoard(),
       turn: 'red',
       count: 0,
+      rotation: false,
       gameOver: '',
       scores: {
         red: 0,
@@ -70,6 +72,10 @@ class App extends React.Component {
     this.setState ((prevState) => {
       var color = prevState.turn === 'red'? 'yellow':'red';
       return {turn: color};
+    }, () => {
+      if (this.state.rotation) {
+        this.rotateBoard();
+      }
     });
   }
   
@@ -124,22 +130,33 @@ class App extends React.Component {
     });
   }
   
+  toggleRotation () {
+    this.setState((prevState) => {
+      return {rotation: !prevState.rotation}
+    });
+  }
+  
+  rotateBoard () {
+    var board = this.state.board;
+    var n = this.state.board.length === 7? 6:7;
+    var newBoard =[];
+    for (var i = 0; i < n; i++) {
+      var col = [];
+      board.forEach((row) => col[i].push(row[i]));
+    };
+    //todo:add gravity;
+  }
+  
   render () {
     return (
       <div>
         <h1>Connect Fo-o-o-or</h1>
-        <h3>Scores</h3>
-        <button onClick={this.resetScores.bind(this)}>reset</button>
-        <div>Red: 
-          <span>{this.state.scores.red}</span>
-        </div>
-        <div>Yellow: 
-          <span>{this.state.scores.yellow}</span>
-        </div>
+        <Scoreboard scores={this.state.scores} handleClick={this.resetScores.bind(this)} />
         <Board board={this.state.board} handleClick={this.handleClick.bind(this)}/>
         <button onClick={this.restart.bind(this)}>new game</button>
-        <div>{this.state.gameOver}
-        </div>
+        <h5>Rotate?</h5>
+        <button onClick={this.toggleRotation.bind(this)}>{this.state.rotation? 'turn off' :'turn on'}</button>
+        <div>{this.state.gameOver}</div>
       </div>
     );
   }
