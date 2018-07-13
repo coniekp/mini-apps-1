@@ -5,7 +5,6 @@ import utils from '../utils/utils.js';
 class App extends React.Component {
   constructor(props){
     super(props);
-    
     this.state = {
       board: utils.generateBoard(),
       turn: 'red'
@@ -13,31 +12,36 @@ class App extends React.Component {
   }
   
   handleClick(x, y) {
-    console.log(x, y);
-    if (this.state.board[x][5] === ' ') {
-      this.setSquareColor(x,y);
-
-      //this.switchTurn();
+    if (this.state.board[x][5] === ' ' ) {
+      this.setSquareColor(x);
     } else {
       console.log("Invalid");
     }
   }
   
-  setSquareColor (x, y) {
+  setSquareColor (x) {
     var color = this.state.turn === 'red'? 'red' :'yellow';
-    
+    var y;
     this.setState((prevState, props) => {
-      var y = prevState.board[x].indexOf(' ');
+      y = prevState.board[x].indexOf(' ');
       prevState.board[x][y] = color;
       return {board: prevState.board};
     }, () => this.checkForWin(this.state.board, x, y, this.state.turn));
   }
   
   checkForWin (board, x, y, turn) {
-    var has4InCol = utils.find4InACol(board, x, turn);
-    var has4InRow = utils.find4InARow(board, y, turn);
+    var colWin = utils.find4InCol(board, x, turn);
+    var rowWin = utils.find4InRow(board, y, turn);
+    var majorDiagWin = utils.find4InMajorDiag(board, x, y, turn);
+    var minorDiagWin = utils.find4InMinorDiag(board, x, y, turn);
+    var hasWin = colWin || rowWin || majorDiagWin || minorDiagWin;
     
-    console.log( has4InRow);
+    if(hasWin) this.endGame();
+    else this.switchTurn();
+  }
+  
+  endGame () {
+    alert(this.state.turn + " wins!");
   }
   
   switchTurn () {
@@ -46,7 +50,6 @@ class App extends React.Component {
       return {turn: color};
     }, () => console.log(this.state.turn));
   }
-  
   
   render () {
     return (
